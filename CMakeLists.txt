@@ -12,13 +12,14 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 find_package(OpenGL REQUIRED)
 
 add_subdirectory(libs/glfw-3.3.2)
+add_subdirectory(libs/stb_image)
 
 add_executable(magick_engine
         main.cpp
         engine/core.cpp
         engine/core.h
 
-        game/game.cpp game/game.h engine/graphics.cpp engine/graphics.h engine/input.cpp engine/input.h engine/log.cpp engine/log.h engine/glshader.cpp engine/glshader.h)
+        game/game.cpp game/game.h engine/graphics.cpp engine/graphics.h engine/input.cpp engine/input.h engine/log.cpp engine/log.h engine/glshader.cpp engine/glshader.h libs/stb_image/stb_image_write.h)
 
 target_link_libraries(magick_engine glfw)
 target_link_libraries(magick_engine OpenGL::GL)
