@@ -9,8 +9,17 @@
 #include "log.h"
 #include "glshader.h"
 #include <OpenGL/gl3.h>
+#include <time.h>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "../libs/stb_image/stb_image_write.h"
 
 #define numVAOs 1
+#define CHANNEL_NUM 3
+
+// FIXME: Make this dynamic
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
 
 GLFWwindow *window;
 GLuint shaderProgram;
@@ -35,7 +44,7 @@ void Core::initWindow()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create the window */
-    window = glfwCreateWindow(800, 600, "Magick Engine", nullptr, nullptr);
+    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Magick Engine", nullptr, nullptr);
     if (!window)
     {
         Log::error("Failed to create window");
@@ -90,6 +99,45 @@ void Core::pollEvents()
     {
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
+
+    /* Take screenshot */
+    if (glfwGetKey(window, GLFW_KEY_F12))
+    {
+        auto *pixels = new uint8_t[SCREEN_WIDTH * SCREEN_HEIGHT * CHANNEL_NUM];
+        glReadPixels(0,0, SCREEN_WIDTH, SCREEN_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+        time_t theTime = time(nullptr);
+        struct tm *curTime = localtime(&theTime);
+        int day = curTime->tm_mday;
+        int month = curTime->tm_mon + 1;
+        int year = curTime->tm_year + 1900;
+        int hour = curTime->tm_hour;
+        int min = curTime->tm_min;
+        int sec = curTime->tm_sec;
+
+        std::string screenFileName = "screenshots/" + std::to_string(day) + "_" +
+                std::to_string(month) + "_" +
+                std::to_string(year) + "_" +
+                std::to_string(hour) + std::to_string(min) + std::to_string(sec) +
+                ".png";
+
+        stbi_write_png(screenFileName.c_str(), SCREEN_WIDTH, SCREEN_HEIGHT, 3, pixels, SCREEN_WIDTH * 3);
+        std::string logString = "Screenshot " + screenFileName + " created!";
+        Log::info(logString.c_str());
+    }
+
+//    int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
+//    int gamepad = glfwJoystickIsGamepad(GLFW_JOYSTICK_1);
+//    if(present)
+//    {
+//        Log::debug("Joystick connected!");
+//    }
+//
+//    if(gamepad)
+//    {
+//        Log::debug("Joystick is gamepad");
+//    }
+//    Log::info(glfwJoystickPresent(GLFW_JOYSTICK_1));
 }
 
 int Core::shouldClose()
