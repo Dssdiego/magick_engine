@@ -9,7 +9,7 @@ namespace Game
 {
     void init();
     void update();
-    void draw();
+    void draw(double d);
 }
 
 #endif //MAGICK_ENGINE_GAME_H

@@ -15,11 +15,10 @@ void Game::update()
 
 }
 
-void Game::draw()
+void Game::draw(double time)
 {
     // FIXME: Make color enum
-    Color pink = {1,0,1,1};
-    Graphics::clear(pink);
-
+//    Color color = {1,0,0,1};
+//    Graphics::clear(color);
 
 }
