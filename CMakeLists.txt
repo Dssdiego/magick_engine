@@ -18,7 +18,9 @@ add_executable(magick_engine
         engine/core.cpp
         engine/core.h
 
-        game/game.cpp game/game.h engine/graphics.cpp engine/graphics.h engine/input.cpp engine/input.h)
+        game/game.cpp game/game.h engine/graphics.cpp engine/graphics.h engine/input.cpp engine/input.h engine/log.cpp engine/log.h engine/glshader.cpp engine/glshader.h)
 
 target_link_libraries(magick_engine glfw)
 target_link_libraries(magick_engine OpenGL::GL)
+
+# TODO: When building, remember to copy glfw to build directory!

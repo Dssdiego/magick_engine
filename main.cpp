@@ -5,6 +5,7 @@
 
 //#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
+#include <iostream>
 #include "engine/core.h"
 #include "game/game.h"
 
@@ -15,16 +16,23 @@ int main()
 
     while (!Core::shouldClose())
     {
+        // Clear color
+        glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Draw point
+        glDrawArrays(GL_POINTS, 0, 1);
+
+//        Game::update(glfwGetTime());
         Game::update();
-        Game::draw();
+        Game::draw(glfwGetTime());
 
         Core::swapBuffers();
         Core::pollEvents();
     }
 
     Core::cleanup();
+    exit(EXIT_SUCCESS);
 
 //    GLFWwindow* window;
 //

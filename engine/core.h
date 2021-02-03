@@ -7,7 +7,6 @@
 
 #include <GLFW/glfw3.h>
 
-
 namespace Core
 {
     // Initializes a window
