@@ -3,7 +3,7 @@
 //
 
 #include "game.h"
-#include "../engine/graphics.h"
+#include "../engine/renderer.h"
 
 void Game::init()
 {
@@ -15,10 +15,7 @@ void Game::update()
 
 }
 
-void Game::draw(double time)
+void Game::draw(double time) // REVIEW: Is this time or delta time?
 {
-    // FIXME: Make color enum
-//    Color color = {1,0,0,1};
-//    Graphics::clear(color);
 
 }
