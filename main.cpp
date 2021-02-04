@@ -1,13 +1,13 @@
 //#define GLFW_INCLUDE_GLCOREARB
 //#define GLFW_INCLUDE_GLEXT
 #define GL_SILENCE_DEPRECATION
-//#include <GLFW/glfw3.h>
 
 //#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #include <iostream>
 #include "engine/core.h"
 #include "game/game.h"
+#include "engine/renderer.h"
 
 int main()
 {
@@ -16,12 +16,12 @@ int main()
 
     while (!Core::shouldClose())
     {
-        // Clear color
-        glClearColor(0,0,0,1);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Clear screen with some color
+        Renderer::clear(COLOR_BLACK);
 
         // Draw point
-        glDrawArrays(GL_POINTS, 0, 1);
+        Renderer::drawPoint();
+//        Renderer::drawTriangle();
 
 //        Game::update(glfwGetTime());
         Game::update();
