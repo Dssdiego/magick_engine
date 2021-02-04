@@ -13,17 +13,16 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../libs/stb_image/stb_image_write.h"
+#include "color.h"
+#include "renderer.h"
 
 #define numVAOs 1
 #define CHANNEL_NUM 3
 
-// FIXME: Make this dynamic
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-
 GLFWwindow *window;
 GLuint shaderProgram;
 GLuint vao[numVAOs];
+Size windowSize { 800, 600};
 
 // REVIEW: Maybe change this namespace? Could it be window?
 void Core::initWindow()
@@ -44,7 +43,7 @@ void Core::initWindow()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create the window */
-    window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Magick Engine", nullptr, nullptr);
+    window = glfwCreateWindow(windowSize.width, windowSize.height, "Magick Engine", nullptr, nullptr);
     if (!window)
     {
         Log::error("Failed to create window");
@@ -73,13 +72,14 @@ void Core::initWindow()
     /* Print GLSL Version */
     std::cout << WHITE << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << RESET << std::endl;
 
+    // REVIEW: Should be Renderer::init() ?
     /* Shaders */
     glGenVertexArrays(numVAOs, vao);
     glBindVertexArray(vao[0]);
 
     // FIXME: Load content dynamically (without having to copy paste on to build directory)
     shaderProgram = LoadShader("shaders/vertex.glsl", "shaders/fragment.glsl");
-    // REVIEW: Use program should be called every frame?
+    // REVIEW: 'Use program' should be called every frame?
     glUseProgram(shaderProgram);
 }
 
@@ -103,8 +103,8 @@ void Core::pollEvents()
     /* Take screenshot */
     if (glfwGetKey(window, GLFW_KEY_F12))
     {
-        auto *pixels = new uint8_t[SCREEN_WIDTH * SCREEN_HEIGHT * CHANNEL_NUM];
-        glReadPixels(0,0, SCREEN_WIDTH, SCREEN_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+        auto *pixels = new uint8_t[windowSize.width * windowSize.height * CHANNEL_NUM];
+        glReadPixels(0,0, windowSize.width, windowSize.height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
         time_t theTime = time(nullptr);
         struct tm *curTime = localtime(&theTime);
@@ -121,7 +121,7 @@ void Core::pollEvents()
                 std::to_string(hour) + std::to_string(min) + std::to_string(sec) +
                 ".png";
 
-        stbi_write_png(screenFileName.c_str(), SCREEN_WIDTH, SCREEN_HEIGHT, 3, pixels, SCREEN_WIDTH * 3);
+        stbi_write_png(screenFileName.c_str(), windowSize.width, windowSize.height, 3, pixels, windowSize.width * 3);
         std::string logString = "Screenshot " + screenFileName + " created!";
         Log::info(logString.c_str());
     }
