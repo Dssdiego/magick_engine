@@ -2,27 +2,38 @@
 // Created by Diego Santos Seabra on 01/02/21.
 //
 
+#define GL_GLEXT_PROTOTYPES
 #define GL_SILENCE_DEPRECATION
 
 #include <iostream>
 #include "core.h"
-#include "log.h"
-#include "glshader.h"
-#include <OpenGL/gl3.h>
-#include <time.h>
+#include "renderer/glshader.h"
+#include <ctime>
+#include <SDL.h>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+
 #include "../libs/stb_image/stb_image_write.h"
 #include "color.h"
-#include "renderer.h"
+#include "renderer/renderer.h"
+#include "input/input.h"
+#include "tools/maths.h"
+#include "tools/log.h"
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <SDL_opengles2.h>
+#include <GLES3/gl3.h>
+#endif
 
 #define numVAOs 1
-#define CHANNEL_NUM 3
 
-GLFWwindow *window;
+SDL_Window *window;
+SDL_GLContext glContext;
 GLuint shaderProgram;
 GLuint vao[numVAOs];
-Size windowSize { 800, 600};
+Size windowSize{800, 600};
+bool closeWindow = false;
 
 // REVIEW: Maybe change this namespace? Could it be window?
 void Core::initWindow()
@@ -30,47 +41,63 @@ void Core::initWindow()
     Log::info("Initializing engine...");
 
     /* Initialize the library */
-    if (!glfwInit())
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
-        Log::error("Failed to initialize GLFW");
+        Log::error("Failed to initialize SDL");
         exit(EXIT_FAILURE);
     }
 
     /* Use the most recent OpenGL Version available in the machine */
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#ifdef __APPLE__
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#endif
     /* Create the window */
-    window = glfwCreateWindow(windowSize.width, windowSize.height, "Magick Engine", nullptr, nullptr);
+    window = SDL_CreateWindow("Magick Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowSize.width,
+                              windowSize.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     if (!window)
     {
         Log::error("Failed to create window");
-        glfwTerminate();
+        SDL_Quit();
     }
 
-    /* Enable V-Sync */
-    glfwSwapInterval(1); // TODO: Allow this on the game config (?)
+    /* Creates OpenGL Context */
+    glContext = SDL_GL_CreateContext(window);
 
-    /* Minimum window size */
-    glfwSetWindowSizeLimits(window, 320, 180, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    /* Enable V-Sync */
+    SDL_GL_SetSwapInterval(1); // TODO: Allow this on the game config (?)
+
+    /* Sets the viewport */
+    // FIXME: Emscripten can't find this
+    glViewport(0, 0, windowSize.width, windowSize.height);
 
     // FIXME: Move this prints to the Log class
 
     /* Print GLFW Version */
-    int major, minor, patch;
-    glfwGetVersion(&major, &minor, &patch);
-    std::cout << WHITE << "GLFW Version: " << major << "." << minor << "." << patch << RESET << std::endl;
+    SDL_version version;
+    SDL_GetVersion(&version);
+#ifdef __APPLE__
+    std::cout << WHITE << "SDL Version: " << version.major << "." << version.minor << "." << version.patch << RESET
+              << std::endl;
+#endif
 
     /* Make the window's context current */
-    glfwMakeContextCurrent(window);
+    SDL_GL_MakeCurrent(window, glContext);
+//    glfwMakeContextCurrent(window);
 
     /* Print OpenGL Version */
+#ifdef __APPLE__
     std::cout << WHITE << "OpenGL Version: " << glGetString(GL_VERSION) << RESET << std::endl;
+#endif
 
     /* Print GLSL Version */
+#ifdef __APPLE__
     std::cout << WHITE << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << RESET << std::endl;
+#endif
 
     // REVIEW: Should be Renderer::init() ?
     /* Shaders */
@@ -86,44 +113,36 @@ void Core::initWindow()
 void Core::swapBuffers()
 {
     /* Swap front and back buffers, e.g. draw on the screen */
-    glfwSwapBuffers(window);
+    SDL_GL_SwapWindow(window);
 }
 
 void Core::pollEvents()
 {
     /* Poll for and process events */
-    glfwPollEvents();
-
-    /* Makes the screen closes when pressing escape button */
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
     {
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    }
+        if (event.type == SDL_QUIT)
+        {
+            closeWindow = true;
+        }
 
-    /* Take screenshot */
-    if (glfwGetKey(window, GLFW_KEY_F12))
-    {
-        auto *pixels = new uint8_t[windowSize.width * windowSize.height * CHANNEL_NUM];
-        glReadPixels(0,0, windowSize.width, windowSize.height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+        else if (event.type == SDL_KEYDOWN)
+        {
+            if (event.key.repeat == 0)
+                Input::onKeyDown((Key) event.key.keysym.scancode);
+        }
 
-        time_t theTime = time(nullptr);
-        struct tm *curTime = localtime(&theTime);
-        int day = curTime->tm_mday;
-        int month = curTime->tm_mon + 1;
-        int year = curTime->tm_year + 1900;
-        int hour = curTime->tm_hour;
-        int min = curTime->tm_min;
-        int sec = curTime->tm_sec;
+        else if (event.type == SDL_KEYUP)
+        {
+            if (event.key.repeat == 0)
+                Input::onKeyUp((Key) event.key.keysym.scancode);
+        }
 
-        std::string screenFileName = "screenshots/" + std::to_string(day) + "_" +
-                std::to_string(month) + "_" +
-                std::to_string(year) + "_" +
-                std::to_string(hour) + std::to_string(min) + std::to_string(sec) +
-                ".png";
-
-        stbi_write_png(screenFileName.c_str(), windowSize.width, windowSize.height, 3, pixels, windowSize.width * 3);
-        std::string logString = "Screenshot " + screenFileName + " created!";
-        Log::info(logString.c_str());
+        else if (event.type == SDL_TEXTINPUT)
+        {
+            Input::onTextUTF8(event.text.text);
+        }
     }
 
 //    int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
@@ -142,14 +161,15 @@ void Core::pollEvents()
 
 int Core::shouldClose()
 {
-    return glfwWindowShouldClose(window);
+    return closeWindow;
 }
 
 void Core::cleanup()
 {
     Log::info("Shutting down engine...");
 
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    SDL_GL_DeleteContext(glContext);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 

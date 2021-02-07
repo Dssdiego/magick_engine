@@ -1,5 +1,3 @@
-//#define GLFW_INCLUDE_GLCOREARB
-//#define GLFW_INCLUDE_GLEXT
 #define GL_SILENCE_DEPRECATION
 
 //#define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -7,7 +5,7 @@
 #include <iostream>
 #include "engine/core.h"
 #include "game/game.h"
-#include "engine/renderer.h"
+#include "engine/renderer/renderer.h"
 
 int main()
 {
@@ -17,15 +15,16 @@ int main()
     while (!Core::shouldClose())
     {
         // Clear screen with some color
-        Renderer::clear(COLOR_BLACK);
+        Renderer::clear(COLOR_PINK);
 
         // Draw point
+//        Renderer::drawRectangle();
         Renderer::drawPoint();
 //        Renderer::drawTriangle();
 
 //        Game::update(glfwGetTime());
         Game::update();
-        Game::draw(glfwGetTime());
+        Game::draw();
 
         Core::swapBuffers();
         Core::pollEvents();

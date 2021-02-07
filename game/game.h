@@ -17,7 +17,7 @@ namespace Game
 {
     void init();
     void update();
-    void draw(double time);
+    void draw();
 }
 
 #endif //MAGICK_ENGINE_GAME_H

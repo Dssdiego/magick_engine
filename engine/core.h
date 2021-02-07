@@ -5,8 +5,6 @@
 #ifndef MAGICK_ENGINE_CORE_H
 #define MAGICK_ENGINE_CORE_H
 
-#include <GLFW/glfw3.h>
-
 namespace Core
 {
     // Initializes a window

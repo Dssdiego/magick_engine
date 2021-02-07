@@ -15,7 +15,7 @@ void Game::update()
 
 }
 
-void Game::draw(double time) // REVIEW: Is this time or delta time?
+void Game::draw() // REVIEW: Is this time or delta time?
 {
 
 }

@@ -3,15 +3,18 @@ project(magick_engine)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# Don't build glfw docs, tests or examples
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wno-missing-braces")
 
-find_package(OpenGL REQUIRED)
+if(${EMSCRIPTEN})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -s USE_SDL=2 -std=c++1z")
+    file(COPY engine/web/index.html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+else()
+    find_package(SDL2 REQUIRED)
+    find_package(OpenGL REQUIRED)
+endif()
 
-add_subdirectory(libs/glfw-3.3.2)
+include_directories(SYSTEM libs ${SDL2_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIRS})
+
 add_subdirectory(libs/stb_image)
 
 add_executable(magick_engine
@@ -19,9 +22,19 @@ add_executable(magick_engine
         engine/core.cpp
         engine/core.h
 
-        game/game.cpp game/game.h engine/renderer.cpp engine/renderer.h engine/input.cpp engine/input.h engine/log.cpp engine/log.h engine/glshader.cpp engine/glshader.h libs/stb_image/stb_image_write.h engine/color.h engine/maths.h)
+        game/game.cpp game/game.h
+        engine/renderer/renderer.cpp engine/renderer/renderer.h engine/input/input.cpp engine/input/input.h engine/tools/log.cpp engine/tools/log.h engine/renderer/glshader.cpp engine/renderer/glshader.h libs/stb_image/stb_image_write.h engine/color.h engine/tools/maths.h engine/input/key.h engine/tools/tools.cpp engine/tools/tools.h engine/input/inputstate.h)
 
-target_link_libraries(magick_engine glfw)
-target_link_libraries(magick_engine OpenGL::GL)
+#if(EMSCRIPTEN)
+#    set_target_properties(magick_engine PROPERTIES LINK_FLAGS "-s DEMANGLE_SUPPORT=1 --preload-file assets --bind")
+#endif()
+
+source_group(libs REGULAR_EXPRESSION libs)
+source_group(engine REGULAR_EXPRESSION engine)
+
+set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++17")
+
+target_link_libraries(magick_engine ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES})
 
 # TODO: When building, remember to copy glfw to build directory!
