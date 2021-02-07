@@ -5,8 +5,8 @@
 #ifndef MAGICK_ENGINE_RENDERER_H
 #define MAGICK_ENGINE_RENDERER_H
 
-#include "color.h"
-#include "maths.h"
+#include "../color.h"
+#include "../tools/maths.h"
 
 namespace Renderer
 {
@@ -18,6 +18,10 @@ namespace Renderer
 
     // Draws a triangle
     void drawTriangle();
+
+    // Draws a rectangle
+    // FIXME: How to abstract this for screen coordinates?
+    void drawRectangle();
 
     // Draws a rectangle/quad
     void drawRectangle(Vector2 position, Size size, Color color);

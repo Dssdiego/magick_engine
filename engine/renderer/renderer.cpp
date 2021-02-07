@@ -5,7 +5,16 @@
 #define GL_SILENCE_DEPRECATION
 
 #include "renderer.h"
-#include <GLFW/glfw3.h>
+#ifdef __APPLE__
+#include <SDL_opengl.h>
+#endif
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+//#include <SDL_opengles2.h>
+//#include <SDL_opengles.h>
+#include <GLES3/gl3.h>
+#endif
 
 void Renderer::clear(Color color)
 {
@@ -15,6 +24,9 @@ void Renderer::clear(Color color)
 
 void Renderer::drawPoint()
 {
+#ifdef __APPLE__
+    glPointSize(100.0f);
+#endif
     glDrawArrays(GL_POINTS, 0, 1);
 }
 
@@ -24,4 +36,7 @@ void Renderer::drawTriangle()
 //    glDrawArrays(GL_TRIANGLES, 0, 1);
 }
 
+void Renderer::drawRectangle()
+{
 
+}

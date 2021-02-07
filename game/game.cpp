@@ -3,7 +3,7 @@
 //
 
 #include "game.h"
-#include "../engine/renderer.h"
+#include "../engine/renderer/renderer.h"
 
 void Game::init()
 {

@@ -2,12 +2,21 @@
 // Created by Diego Santos Seabra on 03/02/21.
 //
 
+#define GL_GLEXT_PROTOTYPES
 #define GL_SILENCE_DEPRECATION
 
 #include "glshader.h"
+#include "../tools/log.h"
 #include <string>
 #include <iostream>
 #include <fstream>
+
+#ifdef __APPLE__
+#include <SDL_opengl.h>
+#include <SDL_opengl_glext.h>
+#else
+#include <GL/gl.h>
+#endif
 
 std::string readFile(const char *filePath) {
     std::string content;
@@ -29,6 +38,7 @@ std::string readFile(const char *filePath) {
 }
 
 
+// NOTE: The use of GLuint is platform independent ;)
 GLuint LoadShader(const char *vertex_path, const char *fragment_path) {
     GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -45,7 +55,7 @@ GLuint LoadShader(const char *vertex_path, const char *fragment_path) {
 
     // Compile vertex shader
 
-    std::cout << "Compiling vertex shader." << std::endl;
+    Log::info("Compiling vertex shader");
     glShaderSource(vertShader, 1, &vertShaderSrc, nullptr);
     glCompileShader(vertShader);
 
@@ -59,7 +69,7 @@ GLuint LoadShader(const char *vertex_path, const char *fragment_path) {
 
     // Compile fragment shader
 
-    std::cout << "Compiling fragment shader." << std::endl;
+    Log::info("Compiling fragment shader");
     glShaderSource(fragShader, 1, &fragShaderSrc, nullptr);
     glCompileShader(fragShader);
 
@@ -71,7 +81,7 @@ GLuint LoadShader(const char *vertex_path, const char *fragment_path) {
     glGetShaderInfoLog(fragShader, logLength, nullptr, fragShaderError);
     std::cout << &fragShaderError << std::endl;
 
-    std::cout << "Linking program" << std::endl;
+    Log::info("Linking shader program");
     GLuint program = glCreateProgram();
     glAttachShader(program, vertShader);
     glAttachShader(program, fragShader);
