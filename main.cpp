@@ -6,10 +6,13 @@
 #include "engine/core.h"
 #include "game/game.h"
 #include "engine/renderer/renderer.h"
+#include "engine/audio/audio.h"
+#include "engine/input/input.h"
 
 int main()
 {
     Core::initWindow();
+    Audio::init();
     Game::init();
 
     while (!Core::shouldClose())
@@ -19,18 +22,28 @@ int main()
 
         // Draw point
 //        Renderer::drawRectangle();
-        Renderer::drawPoint();
+//        Renderer::drawPoint();
 //        Renderer::drawTriangle();
 
 //        Game::update(glfwGetTime());
+
+        // Audio
+        Audio::update();
+
+        // Input
+        Input::frame();
+
+        // Game
         Game::update();
         Game::draw();
 
+        // Core
         Core::swapBuffers();
         Core::pollEvents();
     }
 
     Core::cleanup();
+    Audio::shutdown();
     exit(EXIT_SUCCESS);
 
 //    GLFWwindow* window;
