@@ -105,9 +105,11 @@ void Core::initWindow()
     glBindVertexArray(vao[0]);
 
     // FIXME: Load content dynamically (without having to copy paste on to build directory)
-    shaderProgram = LoadShader("shaders/vertex.glsl", "shaders/fragment.glsl");
+//    createShader(Tools::getAssetPath().append("shaders/common.glsl").c_str());
+//    createShader("triangle");
+//    createShader("triangle_move");
     // REVIEW: 'Use program' should be called every frame?
-    glUseProgram(shaderProgram);
+//    glUseProgram(shaderProgram);
 }
 
 void Core::swapBuffers()
