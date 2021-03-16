@@ -9,8 +9,8 @@
 #include "tools.h"
 #include "log.h"
 #include <ctime>
-#include <iostream>
 #include <SDL_opengl.h>
+#include <filesystem>
 
 #define CHANNEL_NUM 3
 
@@ -38,4 +38,10 @@ void Tools::takeScreenshot(Size windowSize)
                    windowSize.width * 3);
     std::string logString = "Screenshot " + screenFileName + " created!";
     Log::info(logString.c_str());
+}
+
+std::string Tools::getAssetPath()
+{
+    auto parentPath = std::filesystem::current_path().parent_path();
+    return parentPath.concat("/assets/");
 }
