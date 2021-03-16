@@ -12,6 +12,11 @@ struct Vector2
     uint8_t x, y;
 };
 
+struct Point
+{
+    uint8_t x, y;
+};
+
 struct Size
 {
     int width, height;
