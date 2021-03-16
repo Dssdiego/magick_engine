@@ -28,12 +28,15 @@ void Tools::takeScreenshot(Size windowSize)
     int min = curTime->tm_min;
     int sec = curTime->tm_sec;
 
-    std::string screenFileName = "screenshots/" + std::to_string(day) + "_" +
+    std::string screenFileName = getAssetPath() + "screenshots/" + std::to_string(day) + "_" +
                                  std::to_string(month) + "_" +
                                  std::to_string(year) + "_" +
                                  std::to_string(hour) + std::to_string(min) + std::to_string(sec) +
                                  ".png";
 
+
+    // Flips the framebuffer vertically
+    stbi_flip_vertically_on_write(true);
     stbi_write_png(screenFileName.c_str(), windowSize.width, windowSize.height, 3, pixels,
                    windowSize.width * 3);
     std::string logString = "Screenshot " + screenFileName + " created!";

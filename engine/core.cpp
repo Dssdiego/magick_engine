@@ -136,6 +136,9 @@ void Core::pollEvents()
             if ((Key) event.key.keysym.scancode == Key::Escape)
                 closeWindow = true;
 
+            if ((Key) event.key.keysym.scancode == Key::F12)
+                Tools::takeScreenshot(windowSize);
+
             if (event.key.repeat == 0)
                 Input::onKeyDown((Key) event.key.keysym.scancode);
         }
