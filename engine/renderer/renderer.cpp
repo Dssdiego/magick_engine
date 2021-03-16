@@ -24,16 +24,19 @@ void Renderer::clear(Color color)
 
 void Renderer::drawPoint()
 {
-#ifdef __APPLE__
     glPointSize(100.0f);
-#endif
     glDrawArrays(GL_POINTS, 0, 1);
+}
+
+void Renderer::drawSprite(char *fileName, Vector2 position, Color color)
+{
+
 }
 
 void Renderer::drawTriangle()
 {
 //    clear(COLOR_WHITE);
-//    glDrawArrays(GL_TRIANGLES, 0, 1);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void Renderer::drawRectangle()

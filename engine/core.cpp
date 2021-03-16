@@ -7,9 +7,10 @@
 
 #include <iostream>
 #include "core.h"
-#include "renderer/glshader.h"
+#include "renderer/shader.h"
 #include <ctime>
 #include <SDL.h>
+#include <filesystem>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
@@ -19,6 +20,7 @@
 #include "input/input.h"
 #include "tools/maths.h"
 #include "tools/log.h"
+#include "tools/tools.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -69,7 +71,7 @@ void Core::initWindow()
     glContext = SDL_GL_CreateContext(window);
 
     /* Enable V-Sync */
-    SDL_GL_SetSwapInterval(1); // TODO: Allow this on the game config (?)
+    SDL_GL_SetSwapInterval(1); // REVIEW: Allow this on the game config (?)
 
     /* Sets the viewport */
     // FIXME: Emscripten can't find this
@@ -77,11 +79,11 @@ void Core::initWindow()
 
     // FIXME: Move this prints to the Log class
 
-    /* Print GLFW Version */
-    SDL_version version;
-    SDL_GetVersion(&version);
+    /* Print SDL Version */
+    SDL_version sdlVersion;
+    SDL_GetVersion(&sdlVersion);
 #ifdef __APPLE__
-    std::cout << WHITE << "SDL Version: " << version.major << "." << version.minor << "." << version.patch << RESET
+    std::cout << WHITE << "SDL Version: " << unsigned(sdlVersion.major) << "." << unsigned(sdlVersion.minor) << "." << unsigned(sdlVersion.patch) << RESET
               << std::endl;
 #endif
 
