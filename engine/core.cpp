@@ -131,6 +131,9 @@ void Core::pollEvents()
 
         else if (event.type == SDL_KEYDOWN)
         {
+            if ((Key) event.key.keysym.scancode == Key::Escape)
+                closeWindow = true;
+
             if (event.key.repeat == 0)
                 Input::onKeyDown((Key) event.key.keysym.scancode);
         }
