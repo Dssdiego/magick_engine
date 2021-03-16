@@ -221,12 +221,44 @@
     DEFINE_KEY(RightAlt, 230) \
     DEFINE_KEY(RightGui, 231)
 
+#define BUTTON_DEFINITIONS \
+
 // Keyboard Keys
 enum class Key
 {
 #define DEFINE_KEY(name, value) name = value,
     KEY_DEFINITIONS
 #undef DEFINE_KEY
+};
+
+// Game Controller Buttons
+enum class Button
+{
+    // TODO: Implement
+#define DEFINE_BTN(name, value) name = value,
+    BUTTON_DEFINITIONS
+#undef DEFINE_BTN
+};
+
+// Game Controller Axis
+enum class Axis
+{
+    None,
+    LeftX,
+    LeftY,
+    RightX,
+    RightY,
+    LeftTrigger,
+    RightTrigger
+};
+
+// Mouse Buttons
+enum class MouseButton
+{
+    None,
+    Left,
+    Middle,
+    Right,
 };
 
 #endif //MAGICK_ENGINE_KEY_H

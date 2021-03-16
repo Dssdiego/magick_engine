@@ -5,6 +5,8 @@
 #ifndef MAGICK_ENGINE_INPUTSTATE_H
 #define MAGICK_ENGINE_INPUTSTATE_H
 
+#include "../tools/maths.h"
+
 struct KeyboardState
 {
     bool pressed[Input::maxKeyboardKeys];
@@ -12,6 +14,17 @@ struct KeyboardState
     bool released[Input::maxKeyboardKeys];
     uint64_t timestamp[Input::maxKeyboardKeys];
     char text[Input::maxTextInput];
+};
+
+struct MouseState
+{
+    bool pressed[Input::maxMouseButtons];
+    bool down[Input::maxMouseButtons];
+    bool released[Input::maxMouseButtons];
+    uint64_t timestamp[Input::maxMouseButtons];
+    Vector2 screenPosition;
+    Vector2 drawPositions;
+    Point wheel;
 };
 
 // An Input State, which stores the state for gamepads, keyboard, and mouse
@@ -25,7 +38,7 @@ struct InputState
     KeyboardState keyboard;
 
     // The current Mouse state
-//    MouseState mouse;
+    MouseState mouse;
 };
 
 #endif //MAGICK_ENGINE_INPUTSTATE_H
