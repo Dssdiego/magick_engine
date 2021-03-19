@@ -9,6 +9,7 @@ Triangle triangle;
 
 void Game::init()
 {
+    // TODO: Make this automatic for "n" number os entities on the game
     triangle.init();
 }
 

@@ -95,6 +95,7 @@ GLuint createShader(const std::string &shaderName)
     std::vector<std::string> shaderStr = readShaderFile(shaderPath);
     const char *vertShaderSrc = shaderStr[0].c_str();
     const char *fragShaderSrc = shaderStr[1].c_str();
+    // TODO: Implement tesselation and geometry shaders (?)
 
     // Compile vertex shader
 

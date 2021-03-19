@@ -60,7 +60,7 @@ add_executable(magick_engine
         engine/tools/tools.h
         engine/input/inputstate.h
         engine/audio/audio.cpp
-        engine/audio/audio.h engine/components/triangle.cpp engine/components/triangle.h)
+        engine/audio/audio.h engine/components/triangle.cpp engine/components/triangle.h engine/components/entity.cpp engine/components/entity.h)
 
 #if(EMSCRIPTEN)
 #    set_target_properties(magick_engine PROPERTIES LINK_FLAGS "-s DEMANGLE_SUPPORT=1 --preload-file assets --bind")
